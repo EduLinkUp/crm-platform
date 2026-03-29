@@ -1,0 +1,371 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model with roles
+model User {
+  id            String          @id @default(cuid())
+  name          String
+  email         String          @unique
+  password      String
+  role          UserRole        @default(USER)
+  department    String?
+  phone         String?
+  avatar        String?
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  contacts      Contact[]
+  leads         Lead[]
+  deals         Deal[]
+  activities    Activity[]
+  tasks         Task[]
+  notes         Note[]
+  teams         Team[]
+  auditLogs     AuditLog[]
+  
+  @@index([email])
+  @@index([role])
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  SALESPERSON
+  USER
+}
+
+// Contact model
+model Contact {
+  id            String          @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String          @unique
+  phone         String?
+  company       String?
+  jobTitle      String?
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+  country       String?
+  website       String?
+  source        ContactSource   @default(OTHER)
+  segment       String?
+  notes         String?
+  avatar        String?
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  leads         Lead[]
+  deals         Deal[]
+  activities    Activity[]
+  attachments   Attachment[]
+  contactNotes  Note[]
+  interactions  Interaction[]
+  
+  @@index([email])
+  @@index([userId])
+  @@index([source])
+  @@index([segment])
+}
+
+enum ContactSource {
+  WEBSITE
+  REFERRAL
+  COLD_CALL
+  EMAIL
+  SOCIAL_MEDIA
+  TRADE_SHOW
+  PARTNER
+  OTHER
+}
+
+// Lead model
+model Lead {
+  id            String          @id @default(cuid())
+  title         String
+  description   String?
+  status        LeadStatus      @default(NEW)
+  source        ContactSource   @default(OTHER)
+  budget        Int?
+  priority      Priority        @default(MEDIUM)
+  expectedCloseDate DateTime?
+  probability   Int?            @default(50)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  contactId     String
+  contact       Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  deal          Deal?
+  activities    Activity[]
+  
+  @@index([contactId])
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  PROPOSAL_SENT
+  NEGOTIATING
+  WON
+  LOST
+}
+
+// Deal/Opportunity model
+model Deal {
+  id            String          @id @default(cuid())
+  title         String
+  description   String?
+  stage         DealStage       @default(LEAD)
+  value         Float
+  probability   Int?            @default(50)
+  expectedCloseDate DateTime?
+  actualCloseDate DateTime?
+  key_facts     String?
+  isWon         Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  contactId     String
+  contact       Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  leadId        String?         @unique
+  lead          Lead?           @relation(fields: [leadId], references: [id])
+  activities    Activity[]
+  
+  @@index([contactId])
+  @@index([userId])
+  @@index([stage])
+  @@index([isWon])
+}
+
+enum DealStage {
+  LEAD
+  PROSPECT
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Activity model for logging
+model Activity {
+  id            String          @id @default(cuid())
+  type          ActivityType
+  title         String
+  description   String?
+  duration      Int?            // in minutes
+  location      String?
+  attachments   String[]        // array of attachment IDs
+  notes         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  contactId     String
+  contact       Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  dealId        String?
+  deal          Deal?           @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  leadId        String?
+  lead          Lead?           @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  
+  @@index([contactId])
+  @@index([dealId])
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+enum ActivityType {
+  CALL
+  EMAIL
+  MEETING
+  TASK
+  NOTE
+  VISIT
+  PRESENTATION
+  PROPOSAL
+  CONTRACT
+  OTHER
+}
+
+// Task model
+model Task {
+  id            String          @id @default(cuid())
+  title         String
+  description   String?
+  status        TaskStatus      @default(TODO)
+  priority      Priority        @default(MEDIUM)
+  dueDate       DateTime?
+  completedDate DateTime?
+  fromUser      String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([status])
+  @@index([priority])
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+  CANCELLED
+}
+
+// Note model
+model Note {
+  id            String          @id @default(cuid())
+  title         String?
+  content       String
+  type          NoteType        @default(GENERAL)
+  isPrivate     Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  contactId     String?
+  contact       Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  
+  @@index([contactId])
+  @@index([userId])
+}
+
+enum NoteType {
+  GENERAL
+  INTERNAL
+  OBSERVATION
+  FOLLOW_UP
+  REMINDER
+}
+
+// Attachment model
+model Attachment {
+  id            String          @id @default(cuid())
+  fileName      String
+  fileUrl       String
+  fileType      String
+  fileSize      Int
+  uploadedAt    DateTime        @default(now())
+  
+  // Relations
+  contactId     String
+  contact       Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  
+  @@index([contactId])
+}
+
+// Interaction model (for email, calls, meetings)
+model Interaction {
+  id            String          @id @default(cuid())
+  type          InteractionType
+  subject       String?
+  content       String
+  direction     InteractionDirection // INBOUND or OUTBOUND
+  status        InteractionStatus @default(PENDING)
+  scheduledFor  DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  contactId     String
+  contact       Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  
+  @@index([contactId])
+  @@index([type])
+  @@index([status])
+}
+
+enum InteractionType {
+  EMAIL
+  CALL
+  MEETING
+  SMS
+}
+
+enum InteractionDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum InteractionStatus {
+  PENDING
+  SCHEDULED
+  COMPLETED
+  FAILED
+}
+
+// Team model
+model Team {
+  id            String          @id @default(cuid())
+  name          String
+  description   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  
+  // Relations
+  members       User[]
+}
+
+// Audit Log model for tracking changes
+model AuditLog {
+  id            String          @id @default(cuid())
+  userId        String
+  action        String          // CREATE, UPDATE, DELETE, LOGIN, EXPORT
+  entityType    String          // Contact, Deal, User, etc.
+  entityId      String
+  changes       String?         // JSON stringified
+  ipAddress     String?
+  createdAt     DateTime        @default(now())
+  
+  // Relations
+  user          User            @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+}
