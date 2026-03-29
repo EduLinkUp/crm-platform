@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EduLink CRM System - Full Stack Application
 
-## Getting Started
+## 🚀 Project Overview
 
-First, run the development server:
+A **cyberpunk-themed Next.js CRM application** built for advanced customer relationship management, sales pipeline tracking, and team collaboration. This system demonstrates enterprise-grade architecture with modern web technologies optimized for performance and user experience.
+
+### Key Technologies
+- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
+- **Backend**: Node.js, Next.js API Routes
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js with role-based access
+- **Analytics**: Recharts for data visualization
+- **Email**: Nodemailer for automation
+- **Deployment**: Vercel
+
+---
+
+## 📋 Table of Contents
+
+1. [Features](#features)
+2. [Getting Started](#getting-started)
+3. [Project Structure](#project-structure)
+4. [API Documentation](#api-documentation)
+
+---
+
+## ✨ Features
+
+### Core Functionality
+- **NextAuth.js Integration**: Secure authentication with role-based access control
+- **Contact Management**: Full CRUD operations for customer profiles
+- **Sales Pipeline**: Multi-stage deal tracking with probability scoring
+- **Activity Logging**: Track all customer interactions
+- **Email Automation**: Nodemailer integration
+- **Analytics Dashboard**: Real-time charts with Recharts
+- **SSR Implementation**: Server-side rendering for optimal performance
+- **CSV Export**: Export contact lists and reports
+
+### UI/UX
+- **Cyberpunk Design**: Yellow and red neon color scheme with glowing effects
+- **Responsive Layout**: Mobile-friendly interface
+- **Dark Mode**: Performance-optimized dark theme
+
+---
+
+## 🛠 Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm/yarn
+- PostgreSQL 14+
+- Git
+
+### Installation
 
 ```bash
+# 1. Clone the repository
+git clone https://github.com/EduLinkUp-Developers/crm.git
+cd crm
+
+# 2. Install dependencies
+npm install
+
+# 3. Set up environment variables
+cp .env.example .env.local
+
+# 4. Configure PostgreSQL connection
+# DATABASE_URL="postgresql://user:password@localhost:5432/crm_db"
+
+# 5. Setup Prisma and database
+npx prisma generate
+npx prisma db push
+
+# 6. Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📁 Project Structure
 
-## Learn More
+```
+crm/
+├── src/
+│   ├── app/
+│   │   ├── login/page.tsx
+│   │   ├── dashboard/page.tsx
+│   │   ├── contacts/page.tsx
+│   │   ├── pipeline/page.tsx
+│   │   └── api/
+│   ├── components/
+│   │   ├── ui/ (Cyberpunk components)
+│   │   └── layout/
+│   ├── lib/
+│   │   ├── db.ts
+│   │   ├── utils.ts
+│   │   └── email.ts
+│   └── types/
+├── prisma/
+│   └── schema.prisma
+└── docs/ (Comprehensive documentation)
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Vercel
+1. Push to GitHub
+2. Connect repository in Vercel dashboard
+3. Add environment variables (DATABASE_URL, NEXTAUTH_SECRET, SMTP)
+4. Deploy (automatic on push to main)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔒 Security
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- NextAuth.js with encrypted sessions
+- Role-based access control (RBAC)
+- Password hashing with bcrypt
+- HTTPS enforced in production
+
+---
+
+**Version**: 1.0.0 | **Organization**: EduLinkUp - Developers
