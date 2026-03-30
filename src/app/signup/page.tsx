@@ -12,14 +12,16 @@ export default function SignupPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'SALESPERSON',
     agreeToTerms: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
@@ -62,6 +64,7 @@ export default function SignupPage() {
           email: formData.email,
           password: formData.password,
           confirmPassword: formData.confirmPassword,
+          role: formData.role,
         }),
       });
 
@@ -196,6 +199,24 @@ export default function SignupPage() {
                     style={{boxShadow: 'inset 0 0 10px rgba(0, 212, 255, 0.1)'}}
                   />
                 </div>
+              </div>
+
+              {/* Role */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-cyan-300">Account Role</label>
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-slate-800/50 border border-cyan-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-400 transition"
+                  style={{boxShadow: 'inset 0 0 10px rgba(0, 212, 255, 0.1)'}}
+                >
+                  <option value="SALESPERSON">Salesperson</option>
+                  <option value="MANAGER">Manager</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="USER">User</option>
+                </select>
+                <p className="text-xs text-cyan-300/60">Choose your role to set permissions</p>
               </div>
 
               {/* Terms */}

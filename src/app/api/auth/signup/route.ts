@@ -8,6 +8,7 @@ const signupSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
+  role: z.enum(['ADMIN', 'MANAGER', 'SALESPERSON', 'USER']).default('SALESPERSON'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         email: validatedData.email,
         password: hashedPassword,
-        role: 'SALESPERSON',
+        role: validatedData.role,
         isActive: true,
       },
       select: {
