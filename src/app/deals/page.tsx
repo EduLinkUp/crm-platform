@@ -1,7 +1,7 @@
-import { Metadata } from "next"
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+'use client'
+
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -22,11 +22,6 @@ import {
   XCircle,
   AlertCircle
 } from "lucide-react"
-
-export const metadata: Metadata = {
-  title: "Deals - NeonFlow CRM",
-  description: "Track and manage your sales pipeline",
-}
 
 // Mock deals data
 const deals = [
@@ -115,11 +110,15 @@ const getProbabilityColor = (probability: number) => {
   return 'text-red-400'
 }
 
-export default async function DealsPage() {
-  const session = await getServerSession(authOptions)
-  if (!session) {
-    redirect("/auth/signin")
-  }
+export default function DealsPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    const user = localStorage.getItem('crm_user')
+    if (!user) {
+      router.push("/login")
+    }
+  }, [router])
 
   const stats = {
     totalDeals: deals.length,

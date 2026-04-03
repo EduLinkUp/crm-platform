@@ -1,17 +1,12 @@
-import { Metadata } from "next"
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+'use client'
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { ModernNavigation } from "@/components/crm/navigation"
 import { DashboardClient } from "@/components/dashboard-client"
 
-export const metadata: Metadata = {
-  title: "Dashboard - NeonFlow CRM",
-  description: "Professional CRM Dashboard",
-}
-
 // Mock data for dashboard
-const getDashboardData = async (userId: string) => {
+const getDashboardData = (userId: string) => {
   const user = {
     id: userId,
     email: 'admin@neonflow.com',
@@ -54,13 +49,32 @@ const getDashboardData = async (userId: string) => {
   }
 }
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
-  if (!session) {
-    redirect("/login")
-  }
+export default function DashboardPage() {
+  const router = useRouter()
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
-  const data = await getDashboardData(session.user.id)
+  useEffect(() => {
+    // Check authentication client-side
+    const user = localStorage.getItem('crm_user')
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    const userData = JSON.parse(user)
+    const dashboardData = getDashboardData(userData.id || '1')
+    setData(dashboardData)
+    setLoading(false)
+  }, [router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-white text-gray-900">

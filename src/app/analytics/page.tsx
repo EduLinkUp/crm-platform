@@ -1,7 +1,7 @@
-import { Metadata } from "next"
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
+'use client'
+
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -19,11 +19,6 @@ import {
   Download,
   Filter
 } from "lucide-react"
-
-export const metadata: Metadata = {
-  title: "Analytics - NeonFlow CRM",
-  description: "Comprehensive analytics and reporting dashboard",
-}
 
 // Mock analytics data
 const analyticsData = {
@@ -62,11 +57,15 @@ const analyticsData = {
   ],
 }
 
-export default async function AnalyticsPage() {
-  const session = await getServerSession(authOptions)
-  if (!session) {
-    redirect("/auth/signin")
-  }
+export default function AnalyticsPage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    const user = localStorage.getItem('crm_user')
+    if (!user) {
+      router.push("/login")
+    }
+  }, [router])
 
   return (
     <div className="min-h-screen bg-white text-gray-900">
