@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
+import { logAuditAction } from '@/app/api/audit-logs/route';
 
 // Validation schema
 const createContactSchema = z.object({
@@ -83,6 +84,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const userId = request.headers.get('x-user-id') || 'unknown';
 
     // Validate input
     const validatedData = createContactSchema.parse(body);
@@ -103,9 +105,18 @@ export async function POST(request: NextRequest) {
     const contact = await prisma.contact.create({
       data: {
         ...validatedData,
-        userId: 'temp-user-id', // Replace with actual user ID from session
+        userId,
       },
     });
+
+    // Log audit action
+    await logAuditAction(
+      userId,
+      'CREATE',
+      'Contact',
+      contact.id,
+      { firstName: contact.firstName, lastName: contact.lastName, email: contact.email }
+    );
 
     return NextResponse.json(
       {

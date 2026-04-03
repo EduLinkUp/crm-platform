@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
+import { logAuditAction } from '@/app/api/audit-logs/route';
 
 const updateContactSchema = z.object({
   firstName: z.string().optional(),
@@ -64,6 +65,16 @@ export async function PUT(
       data: validatedData,
     });
 
+    // Log audit action
+    const userId = request.headers.get('x-user-id') || 'unknown';
+    await logAuditAction(
+      userId,
+      'UPDATE',
+      'Contact',
+      id,
+      validatedData
+    );
+
     return NextResponse.json(
       { success: true, data: contact, message: 'Contact updated successfully' },
       { status: 200 }
@@ -91,9 +102,19 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    const userId = request.headers.get('x-user-id') || 'unknown';
+    
     await prisma.contact.delete({
       where: { id },
     });
+
+    // Log audit action
+    await logAuditAction(
+      userId,
+      'DELETE',
+      'Contact',
+      id
+    );
 
     return NextResponse.json(
       { success: true, message: 'Contact deleted successfully' },

@@ -103,11 +103,14 @@ export default function ContactsPage() {
     try {
       const response = await fetch('/api/contacts', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          userId: localStorage.getItem('userId') || 'default-user',
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': localStorage.getItem('userId') || '',
+          'x-user-role': localStorage.getItem('userRole') || '',
+          'x-user-email': localStorage.getItem('userEmail') || '',
+          'x-user-name': localStorage.getItem('userName') || '',
+        },
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -126,7 +129,15 @@ export default function ContactsPage() {
   const handleDeleteContact = async (id: string) => {
     if (!confirm('Are you sure you want to delete this contact?')) return;
     try {
-      const response = await fetch(`/api/contacts/${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': localStorage.getItem('userId') || '',
+          'x-user-role': localStorage.getItem('userRole') || '',
+          'x-user-email': localStorage.getItem('userEmail') || '',
+          'x-user-name': localStorage.getItem('userName') || '',
+        },
+      });
       if (!response.ok) throw new Error('Failed to delete');
       fetchContacts();
     } catch (err) {

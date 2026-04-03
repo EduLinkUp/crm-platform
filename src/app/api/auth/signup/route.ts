@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
+import { logAuditAction } from '@/app/api/audit-logs/route';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -17,9 +18,11 @@ const signupSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('💠 SIGNUP INPUT:', body);
     
     // Validate input
     const validatedData = signupSchema.parse(body);
+    console.log('💠 VALIDATED DATA:', validatedData);
     
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -27,6 +30,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingUser) {
+      console.log('⚠️  EMAIL ALREADY EXISTS:', validatedData.email);
       return NextResponse.json(
         { error: 'Email already registered' },
         { status: 400 }
@@ -35,6 +39,7 @@ export async function POST(request: NextRequest) {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+    console.log('💠 PASSWORD HASHED:', { originalLength: validatedData.password.length, hashLength: hashedPassword.length });
 
     // Create user
     const user = await prisma.user.create({
@@ -52,6 +57,17 @@ export async function POST(request: NextRequest) {
         role: true,
       },
     });
+
+    console.log('✅ USER CREATED:', { id: user.id, email: user.email, role: user.role });
+
+    // Log audit action
+    await logAuditAction(
+      user.id,
+      'CREATE',
+      'User',
+      user.id,
+      { email: validatedData.email, role: validatedData.role }
+    );
 
     return NextResponse.json(
       {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
+import { logAuditAction } from '@/app/api/audit-logs/route';
 
 const createActivitySchema = z.object({
   type: z.enum(['CALL', 'EMAIL', 'MEETING', 'NOTE', 'TASK']),
@@ -74,6 +75,15 @@ export async function POST(request: NextRequest) {
         contact: { select: { firstName: true, lastName: true } },
       },
     });
+
+    // Log audit action
+    await logAuditAction(
+      userId,
+      'CREATE',
+      'Activity',
+      activity.id,
+      { type: activity.type, title: activity.title }
+    );
 
     return NextResponse.json(
       { message: 'Activity created', data: activity },

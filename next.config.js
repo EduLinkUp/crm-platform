@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   compress: true,
+  experimental: {
+    optimizePackageImports: ['recharts'],
+  },
   
   // Image Optimization
   images: {
