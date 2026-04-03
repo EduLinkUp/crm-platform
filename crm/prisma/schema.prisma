@@ -1,0 +1,281 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Subscription Tiers
+enum SubscriptionTier {
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+// User Roles
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// Account Status
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  CANCELLED
+}
+
+// User model with authentication
+model User {
+  id                String    @id @default(cuid())
+  name              String?
+  email             String     @unique
+  emailVerified     DateTime?
+  image             String?
+  role              Role     @default(USER)
+  password          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Authentication
+  accounts          Account[]
+  sessions          Session[]
+  
+  // Multi-tenancy
+  organizationUsers OrganizationUser[]
+  ownedOrganizations Organization[] @relation("OrganizationOwner")
+  
+  // Subscriptions
+  subscriptions     Subscription[]
+  
+  // Usage tracking
+  usageRecords      UsageRecord[]
+  
+  @@map("users")
+}
+
+// NextAuth.js models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Multi-tenant Organization model
+model Organization {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  domain      String?
+  logo        String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  owner       User          @relation("OrganizationOwner", fields: [ownerId], references: [id])
+  ownerId     String
+  
+  // Organization members
+  members     OrganizationUser[]
+  
+  // Organization subscriptions
+  subscriptions Subscription[]
+  
+  // Organization usage
+  usageRecords UsageRecord[]
+  
+  // Organization features
+  featureFlags OrganizationFeatureFlag[]
+  
+  // Organization invitations
+  invitations  Invitation[]
+  
+  @@map("organizations")
+}
+
+// Organization membership with roles
+model OrganizationUser {
+  id             String        @id @default(cuid())
+  organizationId String
+  userId         String
+  role           Role          @default(USER)
+  joinedAt       DateTime      @default(now())
+  lastActiveAt   DateTime      @updatedAt
+  
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([organizationId, userId])
+  @@map("organization_users")
+}
+
+// Subscription management
+model Subscription {
+  id               String            @id @default(cuid())
+  userId           String
+  organizationId   String?
+  stripeCustomerId String?           @unique
+  stripeSubscriptionId String?        @unique
+  status           AccountStatus     @default(ACTIVE)
+  tier             SubscriptionTier
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean          @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  user              User              @relation(fields: [userId], references: [id])
+  organization      Organization?     @relation(fields: [organizationId], references: [id])
+  
+  // Subscription items for multiple features
+  items             SubscriptionItem[]
+  
+  @@map("subscriptions")
+}
+
+// Subscription items for granular feature control
+model SubscriptionItem {
+  id             String            @id @default(cuid())
+  subscriptionId String
+  stripePriceId  String
+  quantity       Int               @default(1)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  
+  subscription   Subscription      @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  
+  @@map("subscription_items")
+}
+
+// Usage tracking per tenant
+model UsageRecord {
+  id               String   @id @default(cuid())
+  organizationId   String?
+  userId           String?
+  metric           String   // API calls, storage, etc.
+  quantity         Int
+  periodStart      DateTime
+  periodEnd        DateTime
+  createdAt        DateTime @default(now())
+  
+  organization     Organization? @relation(fields: [organizationId], references: [id])
+  user             User?         @relation(fields: [userId], references: [id])
+  
+  @@map("usage_records")
+}
+
+// Feature flags per subscription tier
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  description String?
+  enabled     Boolean  @default(false)
+  tier        SubscriptionTier
+  
+  // Organization-specific overrides
+  organizationFlags OrganizationFeatureFlag[]
+  
+  @@map("feature_flags")
+}
+
+// Organization-specific feature flags
+model OrganizationFeatureFlag {
+  id             String       @id @default(cuid())
+  organizationId String
+  featureFlagId  String
+  enabled        Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  featureFlag    FeatureFlag  @relation(fields: [featureFlagId], references: [id])
+  
+  @@unique([organizationId, featureFlagId])
+  @@map("organization_feature_flags")
+}
+
+// User invitations
+model Invitation {
+  id             String   @id @default(cuid())
+  email          String
+  organizationId String
+  invitedBy      String   // User ID
+  role           Role     @default(USER)
+  token          String   @unique
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime @default(now())
+  
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  @@map("invitations")
+}
+
+// API rate limiting
+model ApiRateLimit {
+  id             String   @id @default(cuid())
+  organizationId String?
+  userId         String?
+  endpoint       String
+  requests       Int
+  windowStart    DateTime
+  windowEnd      DateTime
+  
+  @@map("api_rate_limits")
+}
+
+// Billing and invoices
+model Invoice {
+  id               String   @id @default(cuid())
+  userId           String
+  organizationId   String?
+  stripeInvoiceId  String   @unique
+  status           String
+  amount           Int
+  currency         String   @default("usd")
+  dueDate          DateTime
+  paidAt           DateTime?
+  createdAt        DateTime @default(now())
+  
+  @@map("invoices")
+}
