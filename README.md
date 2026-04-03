@@ -1,89 +1,59 @@
-# 🚀 NeonFlow - Advanced SaaS Analytics Platform
+# EduLink CRM System - Full Stack Application
 
-<div align="center">
-  <img src="https://img.shields.io/badge/Next.js-14-black" alt="Next.js" />
-  <img src="https://img.shields.io/badge/TypeScript-007ACC" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Prisma-2D3748" alt="Prisma" />
-  <img src="https://img.shields.io/badge/Stripe-008CDD" alt="Stripe" />
-  <img src="https://img.shields.io/badge/NextAuth.js-000000" alt="NextAuth.js" />
-  <img src="https://img.shields.io/badge/Tailwind-38B2AC" alt="Tailwind CSS" />
-</div>
+## 🚀 Project Overview
 
-## 🌟 Overview
+A **modern Next.js CRM application** built for advanced customer relationship management, sales pipeline tracking, and team collaboration. This system demonstrates enterprise-grade architecture with modern web technologies optimized for performance and user experience.
 
-**NeonFlow** is a cutting-edge, multi-tenant SaaS analytics platform showcasing advanced full-stack development capabilities. Built with a cyberpunk aesthetic featuring vibrant neon colors, this project demonstrates enterprise-grade architecture with comprehensive subscription management, role-based access control, and real-time analytics.
+### Key Technologies
+- **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS
+- **Backend**: Node.js, Next.js API Routes
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js with role-based access
+- **UI**: shadcn/ui components with modern blue/white design
+- **Deployment**: Ready for Vercel
 
-## ✨ Key Features
+---
 
-### 🔐 Authentication & Authorization
-- **NextAuth.js** integration with Google and GitHub OAuth
-- **Role-Based Access Control (RBAC)** with USER, ADMIN, and SUPER_ADMIN roles
-- **Session management** with JWT tokens
-- **Protected routes** with server-side middleware
+## 📋 Table of Contents
 
-### 🏢 Multi-Tenant Architecture
-- **Organization management** with isolated workspaces
-- **Team member invitations** and role assignments
-- **Custom domains** per organization
-- **Data isolation** and security boundaries
+1. [Features](#features)
+2. [Getting Started](#getting-started)
+3. [Project Structure](#project-structure)
+4. [Screenshots](#screenshots)
 
-### 💳 Subscription Management
-- **Stripe integration** for recurring billing
-- **Multiple pricing tiers** (Starter, Pro, Enterprise)
-- **Automated billing** with webhooks
-- **Customer portal** for subscription management
-- **Usage tracking** and tier-based limits
+---
 
-### 📊 Analytics & Monitoring
-- **Real-time dashboard** with usage metrics
-- **API rate limiting** per subscription tier
-- **Usage tracking** for API calls, storage, and features
-- **Custom analytics** per organization
-- **Feature flags** system for gradual rollouts
+## ✨ Features
 
-### 🎨 Cyberpunk UI/UX
-- **Vibrant neon theme** with yellow and red accents
-- **Animated components** with glow effects
-- **Responsive design** with Tailwind CSS
-- **Custom animations** and transitions
-- **Dark mode** by default
+### Core Functionality
+- **Customer Management**: Add, edit, delete contacts with detailed profiles
+- **Sales Pipeline**: Visual deal tracking through customizable stages
+- **Task Management**: Assign and track team tasks with deadlines
+- **Analytics Dashboard**: Real-time metrics and performance charts
+- **Team Collaboration**: Multi-user support with role-based permissions
 
-## 🛠 Technology Stack
+### Modern UI/UX
+- **Professional Theme**: Clean blue/white modern design (Updated from cyberpunk)
+- **Responsive Design**: Mobile-first approach for all devices
+- **Interactive Components**: Smooth animations and transitions
+- **Form Modals**: Add Contact, Deal, Task with beautiful forms
+- **Real-time Updates**: Instant feedback for all actions
 
-### Frontend
-- **Next.js 14** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** with custom cyberpunk theme
-- **Framer Motion** for animations
-- **Radix UI** for accessible components
-- **Lucide React** for icons
+---
 
-### Backend
-- **Next.js API Routes** with middleware
-- **Prisma ORM** with PostgreSQL
-- **NextAuth.js** for authentication
-- **Stripe** for payment processing
-- **Resend** for email notifications
-
-### Database
-- **PostgreSQL** with multi-tenant schema
-- **Prisma migrations** and seeding
-- **Connection pooling** and optimization
-
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- PostgreSQL database
-- Stripe account (for payments)
-- OAuth providers (Google, GitHub)
+- Node.js 18+ installed
+- PostgreSQL database (local or cloud)
+- npm or yarn package manager
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-username/neonflow-saas.git
-cd neonflow-saas
+git clone https://github.com/EduLinkUp/crm-platform.git
+cd crm-platform
 ```
 
 2. **Install dependencies**
@@ -91,209 +61,131 @@ cd neonflow-saas
 npm install
 ```
 
-3. **Environment setup**
+3. **Set up environment variables**
 ```bash
-cp env.example .env.local
-# Configure your environment variables
+cp .env.example .env.local
 ```
+Edit `.env.local` with your database credentials.
 
-4. **Database setup**
-```bash
-npx prisma migrate dev
-npx prisma generate
-```
-
-5. **Start development server**
+4. **Run the development server**
 ```bash
 npm run dev
 ```
 
-6. **Open [http://localhost:3000](http://localhost:3000)**
+The application will be available at `http://localhost:3000`
 
-## 🔧 Configuration
+### Demo Credentials
+- **Email**: admin@neonflow.com
+- **Password**: password123
 
-### Environment Variables
-
-```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/neonflow_saas"
-
-# NextAuth.js
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-here"
-
-# OAuth Providers
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
-GITHUB_CLIENT_ID="your-github-client-id"
-GITHUB_CLIENT_SECRET="your-github-client-secret"
-
-# Stripe
-STRIPE_SECRET_KEY="sk_test_your-stripe-secret-key"
-STRIPE_PUBLISHABLE_KEY="pk_test_your-stripe-publishable-key"
-STRIPE_WEBHOOK_SECRET="whsec_your-webhook-secret"
-
-# Email (Resend)
-RESEND_API_KEY="your-resend-api-key"
-RESEND_FROM_EMAIL="noreply@yourdomain.com"
-```
-
-### Stripe Configuration
-
-1. **Create products and prices** in your Stripe dashboard
-2. **Configure webhooks** for payment events
-3. **Set up billing portal** settings
-4. **Update price IDs** in the application
+---
 
 ## 📁 Project Structure
 
 ```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   │   ├── auth/          # Authentication endpoints
-│   │   ├── stripe/        # Stripe webhooks and APIs
-│   │   └── organizations/  # Organization management
-│   ├── dashboard/         # Main dashboard
-│   ├── billing/           # Subscription management
-│   └── auth/              # Authentication pages
-├── components/
-│   ├── ui/                # Reusable UI components
-│   ├── layout/            # Layout components
-│   └── dashboard/         # Dashboard components
-├── lib/
-│   ├── auth.ts            # NextAuth configuration
-│   ├── prisma.ts          # Database client
-│   ├── stripe.ts          # Stripe utilities
-│   └── utils.ts           # Helper functions
-├── types/
-│   └── auth.ts            # TypeScript types
-└── prisma/
-    └── schema.prisma      # Database schema
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── login/             # Authentication pages
+│   │   ├── signup/
+│   │   ├── dashboard/         # Main dashboard with working buttons
+│   │   ├── contacts/          # Contact management
+│   │   ├── deals/            # Sales pipeline
+│   │   ├── tasks/            # Task management
+│   │   └── analytics/        # Reports and charts
+│   ├── components/            # Reusable React components
+│   │   ├── ui/               # shadcn/ui components
+│   │   ├── crm/              # CRM-specific components
+│   │   ├── add-item-modal.tsx # Modal for adding contacts/deals/tasks
+│   │   └── dashboard-client.tsx # Interactive dashboard
+│   ├── lib/                   # Utility functions
+│   │   ├── auth.ts           # Authentication config
+│   │   ├── prisma.ts         # Database client
+│   │   └── utils.ts          # Helper functions
+│   └── types/                 # TypeScript type definitions
+├── crm/                       # Complete CRM copy for submission
+├── prisma/                    # Database schema
+├── public/                    # Static assets
+└── package.json              # Project dependencies
 ```
 
-## 🏗 Architecture Overview
+---
 
-### Multi-Tenancy Model
-- **Shared database, shared schema** approach
-- **Organization-based data isolation**
-- **Row-level security** with organization_id
-- **Scalable design** for thousands of tenants
+## 🔧 Key Components
 
-### Subscription Flow
-1. **User selects tier** → Stripe checkout
-2. **Payment success** → Webhook creates subscription
-3. **Database updated** → User access granted
-4. **Usage tracking** → Rate limiting applied
-5. **Billing cycle** → Automated renewals
+### Add Item Modal
+Dynamic modal component with forms for:
+- **Contacts**: Name, email, phone, company, status
+- **Deals**: Title, company, value, stage, close date
+- **Tasks**: Title, description, priority, due date, assignee
 
-### Security Features
-- **OAuth 2.0** authentication
-- **JWT session tokens**
-- **API rate limiting**
-- **CORS protection**
-- **SQL injection prevention**
-- **XSS protection**
+### Dashboard Client
+Interactive dashboard featuring:
+- Real-time statistics cards
+- Recent activities feed
+- Top customers grid
+- Working Add Contact/Deal/Task buttons
+- localStorage data persistence
 
-## 📊 Subscription Tiers
+### Authentication System
+- NextAuth.js with credentials provider
+- In-memory user storage for demo
+- Protected routes with middleware
 
-| Feature | Starter | Pro | Enterprise |
-|---------|---------|-----|------------|
-| Team Members | 5 | 25 | Unlimited |
-| API Calls/month | 100 | 1,000 | 10,000 |
-| Organizations | 1 | 5 | Unlimited |
-| Analytics | Basic | Advanced | Real-time |
-| Support | Email | Priority | 24/7 Phone |
-| Custom Integrations | ❌ | ✅ | ✅ |
-| Dedicated Manager | ❌ | ❌ | ✅ |
+---
+
+## 🎨 UI Transformation
+
+### Before (Cyberpunk Theme)
+- Black background with yellow neon colors
+- Dark aesthetic with glow effects
+- Hard to read for professional use
+
+### After (Modern Professional)
+- Clean white background with blue accents
+- Professional business appearance
+- Better accessibility and readability
+- Industry-standard CRM interface
+
+---
 
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
-1. **Connect repository** to Vercel
-2. **Configure environment variables**
-3. **Set up Stripe webhooks**
-4. **Deploy** with automatic SSL
-
-### Docker
 ```bash
-# Build image
-docker build -t neonflow-saas .
-
-# Run container
-docker run -p 3000:3000 neonflow-saas
+npm i -g vercel
+vercel
 ```
-
-### Manual Deployment
-```bash
-# Build for production
-npm run build
-
-# Start production server
-npm start
-```
-
-## 🧪 Testing
-
-```bash
-# Run unit tests
-npm run test
-
-# Run E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:coverage
-```
-
-## 📈 Performance
-
-- **Lighthouse Score**: 95+ Performance
-- **Core Web Vitals**: Optimized
-- **Bundle Size**: < 200KB gzipped
-- **API Response Time**: < 200ms
-- **Database Queries**: Optimized with indexes
-
-## 🔮 Roadmap
-
-- [ ] **Real-time collaboration** with WebSockets
-- [ ] **Advanced analytics** with machine learning
-- [ ] **Mobile apps** (iOS/Android)
-- [ ] **API marketplace** for third-party integrations
-- [ ] **White-label** solutions
-- [ ] **Advanced reporting** and exports
-- [ ] **Multi-language** support
-
-## 🤝 Contributing
-
-1. **Fork** the repository
-2. **Create feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to branch** (`git push origin feature/amazing-feature`)
-5. **Open Pull Request**
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Next.js team** for the amazing framework
-- **Stripe** for payment processing
-- **Prisma** for the excellent ORM
-- **Tailwind CSS** for utility-first CSS
-- **Vercel** for hosting and deployment
-
-## 📞 Support
-
-- **Documentation**: [docs.neonflow.com](https://docs.neonflow.com)
-- **Discord Community**: [Join our server](https://discord.gg/neonflow)
-- **Email Support**: support@neonflow.com
-- **Issues**: [GitHub Issues](https://github.com/your-username/neonflow-saas/issues)
 
 ---
 
-<div align="center">
-  <p>Made with ❤️ and 🚀 by the NeonFlow Team</p>
-  <p>⭐ If you like this project, please give it a star!</p>
-</div>
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Push to branch
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 👨‍💻 Author
+
+**EduLinkUp** - Building educational technology solutions
+
+Project Link: [https://github.com/EduLinkUp/crm-platform](https://github.com/EduLinkUp/crm-platform)
+
+---
+
+## 🙏 Acknowledgments
+
+- Next.js Team
+- shadcn/ui
+- Tailwind CSS
+- Prisma
+- NextAuth.js
