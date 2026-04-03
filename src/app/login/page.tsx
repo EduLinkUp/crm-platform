@@ -25,7 +25,7 @@ export default function ModernLoginPage() {
       // Simple in-memory authentication
       if (email === 'admin@neonflow.com' && password === 'password123') {
         // Store user info in localStorage
-        localStorage.setItem('user', JSON.stringify({
+        localStorage.setItem('crm_user', JSON.stringify({
           id: 'demo-user-1',
           email: 'admin@neonflow.com',
           name: 'Demo Admin',
@@ -36,7 +36,7 @@ export default function ModernLoginPage() {
         router.push('/dashboard')
       } else if (email && password.length >= 8) {
         // Allow any email with password >= 8 chars for demo
-        localStorage.setItem('user', JSON.stringify({
+        localStorage.setItem('crm_user', JSON.stringify({
           id: Date.now().toString(),
           email: email,
           name: email.split('@')[0],
